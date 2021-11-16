@@ -1,8 +1,5 @@
 module github.com/CristianArboleda/gotwittor
 
-go 1.12
+go 1.17
 
 
-require(
-
-)
