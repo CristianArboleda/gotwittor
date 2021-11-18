@@ -1,6 +1,6 @@
 package models
 
-/*LoginResponse: LoginResponse model */
+// LoginResponse : LoginResponse model
 type LoginResponse struct {
 	Token string `json:"token,omitempty"`
 }

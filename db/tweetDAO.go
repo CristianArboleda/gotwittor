@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-/* SaveTweet: savet a tweet in the DB*/
+// SaveTweet : save a tweet in the DB
 func SaveTweet(tw models.Tweet) (string, bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -35,7 +35,26 @@ func SaveTweet(tw models.Tweet) (string, bool, error) {
 	return objI.Hex(), true, nil
 }
 
-/*FindTweetsByUserID: find all tweets of a user*/
+// DeleteTweet : save a tweet in the DB
+func DeleteTweet(ID string, userID string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	db := MongoConnection.Database("gotwitor")
+	collection := db.Collection("tweet")
+
+	objID, _ := primitive.ObjectIDFromHex(ID)
+
+	condition := bson.M{
+		"_id":    objID,
+		"userid": userID,
+	}
+	_, err := collection.DeleteOne(ctx, condition)
+
+	return err
+}
+
+// FindTweetsByUserID : find all tweets of a user
 func FindTweetsByUserID(userID string, page int64) ([]*models.Tweet, bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()

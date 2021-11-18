@@ -10,7 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-/*SaveUser: save user in the DB*/
+// SaveUser : save user in the DB
 func SaveUser(us models.User) (string, bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -28,7 +28,7 @@ func SaveUser(us models.User) (string, bool, error) {
 	return ObjID.String(), true, nil
 }
 
-/*UpdateUser : save user in the DB*/
+// UpdateUser : save user in the DB
 func UpdateUser(us models.User, ID string) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -84,7 +84,7 @@ func UpdateUser(us models.User, ID string) (bool, error) {
 	return true, nil
 }
 
-/*FindUserByEmail: find if exist a user by a email*/
+// FindUserByEmail : find if exist a user by a email
 func FindUserByEmail(email string) (models.User, bool, string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -106,7 +106,7 @@ func FindUserByEmail(email string) (models.User, bool, string) {
 	return result, true, ID
 }
 
-/*FindUserById: find if exist a user by an ID*/
+// FindUserById : find if exist a user by an ID
 func FindUserById(ID string) (models.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -127,7 +127,7 @@ func FindUserById(ID string) (models.User, error) {
 	return result, nil
 }
 
-/*CheckLogin: check if login params are valid*/
+// CheckLogin : check if login params are valid
 func CheckLogin(email, pass string) (models.User, bool) {
 	us, exist, _ := FindUserByEmail(email)
 	if !exist {

@@ -8,11 +8,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-/*MongoConnection: Mongo connection object */
+// MongoConnection : Mongo connection object
 var MongoConnection = ConnectDB()
 var clientOptions = options.Client().ApplyURI("mongodb+srv://cristian:Cr1st14n@gotwittor.dpz3j.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 
-/* ConnectDB: Create the connection to Mongo DB*/
+// ConnectDB : Create the connection to Mongo DB
 func ConnectDB() *mongo.Client {
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
@@ -28,7 +28,7 @@ func ConnectDB() *mongo.Client {
 	return client
 }
 
-/*CheckConnection: check if the connection is active*/
+// CheckConnection : check if the connection is active
 func CheckConnection() bool {
 	err := MongoConnection.Ping(context.TODO(), nil)
 	if err != nil {

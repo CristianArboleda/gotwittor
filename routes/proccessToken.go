@@ -10,14 +10,14 @@ import (
 	jwtgo "github.com/dgrijalva/jwt-go"
 )
 
-/*Email : email of current user */
+// Email : email of current user
 var Email string
 
-/*UserID : ID of current user */
+// UserID : ID of current user
 var UserID string
 
-/*ProccessToken : funtion that process the token */
-func ProccessToken(token string) (*models.Claim, bool, string, error) {
+// ProcessToken : function that process the token */
+func ProcessToken(token string) (*models.Claim, bool, string, error) {
 
 	claims := &models.Claim{}
 
@@ -30,7 +30,7 @@ func ProccessToken(token string) (*models.Claim, bool, string, error) {
 	token = strings.TrimSpace(splitToken[1])
 
 	tk, err := jwtgo.ParseWithClaims(token, claims, func(t *jwtgo.Token) (interface{}, error) {
-		return jwt.JWTPass, nil
+		return jwt.Pass, nil
 	})
 
 	if err != nil {

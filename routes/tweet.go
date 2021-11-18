@@ -10,6 +10,7 @@ import (
 	"github.com/CristianArboleda/gotwittor/models"
 )
 
+// SaveTweet : save a new Tweet
 func SaveTweet(rw http.ResponseWriter, r *http.Request) {
 	var tw models.Tweet
 	err := json.NewDecoder(r.Body).Decode(&tw)
@@ -39,6 +40,23 @@ func SaveTweet(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusCreated)
 }
 
+// DeleteTweet : delete a Tweet
+func DeleteTweet(rw http.ResponseWriter, r *http.Request) {
+	ID := r.URL.Query().Get("id")
+	if len(ID) < 1 {
+		http.Error(rw, "The id param is required", http.StatusBadRequest)
+		return
+	}
+	err := db.DeleteTweet(ID, UserID)
+	if err != nil {
+		http.Error(rw, "Error trying to delete the record: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	rw.Header().Set("context-type", "application/json")
+	rw.WriteHeader(http.StatusCreated)
+}
+
+// GetTweets : get all tweets of a user
 func GetTweets(rw http.ResponseWriter, r *http.Request) {
 	ID := r.URL.Query().Get("id")
 	if len(ID) < 1 {

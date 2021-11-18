@@ -11,16 +11,28 @@ import (
 	"github.com/rs/cors"
 )
 
-/*RoutesHandler: build the server listener*/
+// RoutesHandler : build the server listener
 func RoutesHandler() {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/register", middleware.CheckDB(routes.Register)).Methods("POST")
 	router.HandleFunc("/login", middleware.CheckDB(routes.Login)).Methods("POST")
+
 	router.HandleFunc("/profile", middleware.CheckDB(middleware.CheckJWT(routes.GetProfile))).Methods("GET")
-	router.HandleFunc("/profile", middleware.CheckDB(middleware.CheckJWT(routes.UpdatePerfil))).Methods("PUT")
+	router.HandleFunc("/profile", middleware.CheckDB(middleware.CheckJWT(routes.UpdateProfile))).Methods("PUT")
+
 	router.HandleFunc("/tweet", middleware.CheckDB(middleware.CheckJWT(routes.SaveTweet))).Methods("POST")
 	router.HandleFunc("/tweet", middleware.CheckDB(middleware.CheckJWT(routes.GetTweets))).Methods("GET")
+	router.HandleFunc("/tweet", middleware.CheckDB(middleware.CheckJWT(routes.DeleteTweet))).Methods("DELETE")
+
+	router.HandleFunc("/avatar", middleware.CheckDB(middleware.CheckJWT(routes.GetAvatar))).Methods("GET")
+	router.HandleFunc("/avatar", middleware.CheckDB(middleware.CheckJWT(routes.AddAvatar))).Methods("POST")
+	router.HandleFunc("/banner", middleware.CheckDB(middleware.CheckJWT(routes.GetBanner))).Methods("GET")
+	router.HandleFunc("/banner", middleware.CheckDB(middleware.CheckJWT(routes.AddBanner))).Methods("POST")
+
+	router.HandleFunc("/relation", middleware.CheckDB(middleware.CheckJWT(routes.SaveRelation))).Methods("POST")
+	router.HandleFunc("/relation", middleware.CheckDB(middleware.CheckJWT(routes.DeleteRelation))).Methods("DELETE")
+	router.HandleFunc("/relation", middleware.CheckDB(middleware.CheckJWT(routes.GetRelation))).Methods("GET")
 
 	PORT := os.Getenv("PORT")
 	if PORT == "" {

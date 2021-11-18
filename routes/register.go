@@ -8,7 +8,7 @@ import (
 	"github.com/CristianArboleda/gotwittor/models"
 )
 
-/*Register: function to register to new user*/
+// Register : function to register to new user
 func Register(rw http.ResponseWriter, r *http.Request) {
 	var us models.User
 	err := json.NewDecoder(r.Body).Decode(&us)

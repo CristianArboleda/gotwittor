@@ -6,7 +6,7 @@ import (
 	"github.com/CristianArboleda/gotwittor/db"
 )
 
-/*CheckDB: check if the DB is active and redirect the request */
+// CheckDB : check if the DB is active and redirect the request
 func CheckDB(next http.HandlerFunc) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		if !db.CheckConnection() {

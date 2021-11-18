@@ -10,7 +10,7 @@ import (
 	"github.com/CristianArboleda/gotwittor/models"
 )
 
-/*Login: method that check the login params */
+// Login : method that check the login params
 func Login(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("content-type", "application/json")
 
@@ -49,7 +49,7 @@ func Login(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusCreated)
 	json.NewEncoder(rw).Encode(resp)
 
-	//Cookie
+	//Add Cookie
 	expirationTime := time.Now().Add(24 * time.Hour)
 	http.SetCookie(rw, &http.Cookie{
 		Name: "token", Value: jwtKey, Expires: expirationTime,

@@ -7,9 +7,9 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
-var JWTPass []byte = []byte("This_is_the_super_pass")
+var Pass []byte = []byte("This_is_the_super_pass")
 
-/*BuildJWT: function that build the JWT*/
+// BuildJWT : function that build the JWT
 func BuildJWT(us models.User) (string, error) {
 
 	payload := jwt.MapClaims{
@@ -23,7 +23,7 @@ func BuildJWT(us models.User) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
 
-	jwtKey, err := token.SignedString(JWTPass)
+	jwtKey, err := token.SignedString(Pass)
 	if err != nil {
 		return jwtKey, err
 	}
