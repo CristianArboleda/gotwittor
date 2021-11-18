@@ -28,6 +28,62 @@ func SaveUser(us models.User) (string, bool, error) {
 	return ObjID.String(), true, nil
 }
 
+/*UpdateUser : save user in the DB*/
+func UpdateUser(us models.User, ID string) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	db := MongoConnection.Database("gotwitor")
+	collection := db.Collection("user")
+
+	registro := make(map[string]interface{})
+	if len(us.Name) > 0 {
+		registro["name"] = us.Name
+	}
+	if len(us.LastName) > 0 {
+		registro["lastName"] = us.LastName
+	}
+	if len(us.Comment) > 0 {
+		registro["comment"] = us.Comment
+	}
+	if len(us.Website) > 0 {
+		registro["website"] = us.Website
+	}
+	if len(us.Avatar) > 0 {
+		registro["avatar"] = us.Avatar
+	}
+	if len(us.Banner) > 0 {
+		registro["banner"] = us.Banner
+	}
+	if len(us.Banner) > 0 {
+		registro["banner"] = us.Banner
+	}
+	if !us.BirthDate.IsZero() {
+		registro["birthDate"] = us.BirthDate
+	}
+
+	if len(us.Password) > 0 {
+		registro["password"], _ = EncryptPass(us.Password)
+	}
+
+	updateString := bson.M{
+		"$set": registro,
+	}
+
+	objID, _ := primitive.ObjectIDFromHex(ID)
+
+	filter := bson.M{
+		"_id": bson.M{
+			"$eq": objID,
+		},
+	}
+
+	_, err := collection.UpdateOne(ctx, filter, updateString)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
 /*FindUserByEmail: find if exist a user by a email*/
 func FindUserByEmail(email string) (models.User, bool, string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)

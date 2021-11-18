@@ -13,8 +13,8 @@ import (
 /*Email : email of current user */
 var Email string
 
-/*IDUsuario : ID of current user */
-var IDUsuario string
+/*UserID : ID of current user */
+var UserID string
 
 /*ProccessToken : funtion that process the token */
 func ProccessToken(token string) (*models.Claim, bool, string, error) {
@@ -44,8 +44,8 @@ func ProccessToken(token string) (*models.Claim, bool, string, error) {
 
 	if exist {
 		Email = claims.Email
-		IDUsuario = claims.ID.Hex()
+		UserID = claims.ID.Hex()
 	}
 
-	return claims, exist, IDUsuario, nil
+	return claims, exist, UserID, nil
 }
