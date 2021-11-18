@@ -21,7 +21,7 @@ func SaveTweet(tw models.Tweet) (string, bool, error) {
 
 	tweet := bson.M{
 		"userid":     tw.UserID,
-		"mensaje":    tw.Message,
+		"message":    tw.Message,
 		"createdate": tw.CreateDate,
 	}
 
