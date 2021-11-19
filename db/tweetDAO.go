@@ -65,9 +65,9 @@ func FindTweetsByUserID(userID string, page int64) ([]*models.Tweet, bool) {
 	var result []*models.Tweet
 	condition := bson.M{"userid": userID}
 	opts := options.Find()
+	opts.SetSkip((page - 1) * 20)
 	opts.SetLimit(20)
 	opts.SetSort(bson.D{{Key: "createdate", Value: -1}})
-	opts.SetSkip((page - 1) * 20)
 
 	records, err := collection.Find(ctx, condition, opts)
 
@@ -92,5 +92,45 @@ func FindTweetsByUserID(userID string, page int64) ([]*models.Tweet, bool) {
 	}
 	*/
 
+	return result, true
+}
+
+// FindFollowersTweets : find  all followers tweets
+func FindFollowersTweets(userID string, page int64) ([]models.FollowersTweetsResponse, bool) {
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	db := MongoConnection.Database("gotwitor")
+	collection := db.Collection("relation")
+
+	skip := (page - 1) * 20
+
+	conditions := make([]bson.M, 0)
+	// filter by user id
+	conditions = append(conditions, bson.M{"$match": bson.M{"userid": userID}})
+	// Join with Tweet doc
+	conditions = append(conditions, bson.M{
+		"$lookup": bson.M{
+			"from":         "tweet",
+			"localField":   "relationuserid",
+			"foreignField": "userid",
+			"as":           "tweet",
+		},
+	})
+	// Flatten records
+	conditions = append(conditions, bson.M{"$unwind": "$tweet"})
+	// sorting the records (-1 desc order, 1 asc order)
+	conditions = append(conditions, bson.M{"$sort": bson.M{"tweet.createdate": -1}})
+	// pagination restrictions always first the skip and after the limit
+	conditions = append(conditions, bson.M{"$skip": skip})
+	conditions = append(conditions, bson.M{"$limit": 20})
+
+	record, err := collection.Aggregate(ctx, conditions)
+	var result []models.FollowersTweetsResponse
+	err = record.All(ctx, &result)
+	if err != nil {
+		log.Fatal(err.Error())
+		return result, false
+	}
 	return result, true
 }

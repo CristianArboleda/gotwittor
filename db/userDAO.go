@@ -2,6 +2,8 @@ package db
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 	"time"
 
 	"github.com/CristianArboleda/gotwittor/models"
@@ -35,38 +37,38 @@ func UpdateUser(us models.User, ID string) (bool, error) {
 	db := MongoConnection.Database("gotwitor")
 	collection := db.Collection("user")
 
-	registro := make(map[string]interface{})
+	record := make(map[string]interface{})
 	if len(us.Name) > 0 {
-		registro["name"] = us.Name
+		record["name"] = us.Name
 	}
 	if len(us.LastName) > 0 {
-		registro["lastName"] = us.LastName
+		record["lastName"] = us.LastName
 	}
 	if len(us.Comment) > 0 {
-		registro["comment"] = us.Comment
+		record["comment"] = us.Comment
 	}
 	if len(us.Website) > 0 {
-		registro["website"] = us.Website
+		record["website"] = us.Website
 	}
 	if len(us.Avatar) > 0 {
-		registro["avatar"] = us.Avatar
+		record["avatar"] = us.Avatar
 	}
 	if len(us.Banner) > 0 {
-		registro["banner"] = us.Banner
+		record["banner"] = us.Banner
 	}
 	if len(us.Banner) > 0 {
-		registro["banner"] = us.Banner
+		record["banner"] = us.Banner
 	}
 	if !us.BirthDate.IsZero() {
-		registro["birthDate"] = us.BirthDate
+		record["birthDate"] = us.BirthDate
 	}
 
 	if len(us.Password) > 0 {
-		registro["password"], _ = EncryptPass(us.Password)
+		record["password"], _ = EncryptPass(us.Password)
 	}
 
 	updateString := bson.M{
-		"$set": registro,
+		"$set": record,
 	}
 
 	objID, _ := primitive.ObjectIDFromHex(ID)
@@ -141,4 +143,59 @@ func CheckLogin(email, pass string) (models.User, bool) {
 		return us, false
 	}
 	return us, true
+}
+
+// FindUsersByFilters : Find users by filters
+func FindUsersByFilters(ID string, page int64, search string, relationType string) ([]*models.User, bool) {
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	db := MongoConnection.Database("gotwitor")
+	collection := db.Collection("user")
+
+	var result []*models.User
+	opts := options.Find()
+	opts.SetSkip((page - 1) * 20)
+	opts.SetLimit(20)
+
+	query := bson.M{
+		"name": bson.M{"$regex": `(?i)` + search},
+	}
+	records, err := collection.Find(ctx, query, opts)
+
+	if err != nil {
+		log.Fatal(err.Error())
+		return result, false
+	}
+
+	var add bool
+
+	for records.Next(context.TODO()) {
+		var usu models.User
+		err = records.Decode(&usu)
+		if err != nil {
+			log.Fatal(err.Error())
+			return result, false
+		}
+		if ID == usu.ID.Hex() {
+			continue
+		}
+		rel, _ := FindRelationByUserAndRelationUser(ID, usu.ID.Hex())
+		if ID == rel.RelationUserID {
+			continue
+		}
+		add = false
+		if relationType == "NO_FOLLOW" && len(rel.UserID) < 1 {
+			add = true
+		} else if relationType == "FOLLOW" && len(rel.UserID) > 0 {
+			add = true
+		}
+
+		if add {
+			usu.Password = ""
+			result = append(result, &usu)
+		}
+	}
+	records.Close(context.TODO())
+	return result, true
 }

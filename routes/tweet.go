@@ -84,3 +84,28 @@ func GetTweets(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusCreated)
 	json.NewEncoder(rw).Encode(results)
 }
+
+// GetFollowersTweets : get all followers tweets
+func GetFollowersTweets(rw http.ResponseWriter, r *http.Request) {
+
+	if len(r.URL.Query().Get("page")) < 1 {
+		http.Error(rw, "The page param is required", http.StatusBadRequest)
+		return
+	}
+	page, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		http.Error(rw, "The page param must be a numeric value", http.StatusBadRequest)
+		return
+	}
+	pag := int64(page)
+
+	results, status := db.FindFollowersTweets(UserID, pag)
+	if !status {
+		http.Error(rw, "Error trying to get the follower tweets", http.StatusBadRequest)
+		return
+	}
+
+	rw.Header().Set("context-type", "application/json")
+	rw.WriteHeader(http.StatusCreated)
+	json.NewEncoder(rw).Encode(results)
+}

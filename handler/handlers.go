@@ -20,10 +20,12 @@ func RoutesHandler() {
 
 	router.HandleFunc("/profile", middleware.CheckDB(middleware.CheckJWT(routes.GetProfile))).Methods("GET")
 	router.HandleFunc("/profile", middleware.CheckDB(middleware.CheckJWT(routes.UpdateProfile))).Methods("PUT")
+	router.HandleFunc("/profiles", middleware.CheckDB(middleware.CheckJWT(routes.GetProfilesByFilters))).Methods("GET")
 
 	router.HandleFunc("/tweet", middleware.CheckDB(middleware.CheckJWT(routes.SaveTweet))).Methods("POST")
 	router.HandleFunc("/tweet", middleware.CheckDB(middleware.CheckJWT(routes.GetTweets))).Methods("GET")
 	router.HandleFunc("/tweet", middleware.CheckDB(middleware.CheckJWT(routes.DeleteTweet))).Methods("DELETE")
+	router.HandleFunc("/followerstweets", middleware.CheckDB(middleware.CheckJWT(routes.GetFollowersTweets))).Methods("GET")
 
 	router.HandleFunc("/avatar", middleware.CheckDB(middleware.CheckJWT(routes.GetAvatar))).Methods("GET")
 	router.HandleFunc("/avatar", middleware.CheckDB(middleware.CheckJWT(routes.AddAvatar))).Methods("POST")

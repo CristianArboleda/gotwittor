@@ -5,6 +5,7 @@ import (
 	"github.com/CristianArboleda/gotwittor/db"
 	"github.com/CristianArboleda/gotwittor/models"
 	"net/http"
+	"strconv"
 )
 
 // GetProfile : get profile info
@@ -45,4 +46,33 @@ func UpdateProfile(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	rw.WriteHeader(http.StatusCreated)
+}
+
+// GetProfilesByFilters : Get a list of profiles by filters
+func GetProfilesByFilters(rw http.ResponseWriter, r *http.Request) {
+	relationType := r.URL.Query().Get("type")
+	if len(relationType) < 1 {
+		http.Error(rw, "The type param is required", http.StatusBadRequest)
+		return
+	}
+	if len(r.URL.Query().Get("page")) < 1 {
+		http.Error(rw, "The page param is required", http.StatusBadRequest)
+		return
+	}
+	pag, err := strconv.Atoi(r.URL.Query().Get("page"))
+	if err != nil {
+		http.Error(rw, "The page param must be a numeric value", http.StatusBadRequest)
+		return
+	}
+	page := int64(pag)
+	search := r.URL.Query().Get("search")
+
+	result, status := db.FindUsersByFilters(UserID, page, search, relationType)
+	if !status {
+		http.Error(rw, "Error searching the records", http.StatusBadRequest)
+		return
+	}
+	rw.Header().Set("context-type", "application/json")
+	rw.WriteHeader(http.StatusCreated)
+	json.NewEncoder(rw).Encode(result)
 }
